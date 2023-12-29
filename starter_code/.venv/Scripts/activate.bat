@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\LAKUNLE\Desktop\DevOps Project EEPAS\EEPAS\starter_code\.venv
+set VIRTUAL_ENV=C:\Users\Samo\Desktop\DevOps Project EEPAS\EEPAS\EEPAS-DEVOPS-PROJECT\starter_code\.venv
 
 if not defined PROMPT set PROMPT=$P$G
 
