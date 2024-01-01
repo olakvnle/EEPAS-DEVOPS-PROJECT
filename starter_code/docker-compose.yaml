@@ -15,6 +15,7 @@ services:
       - "5432:5432"
 
   app:
+    image: image1
     build: .
     restart: always
     ports:
