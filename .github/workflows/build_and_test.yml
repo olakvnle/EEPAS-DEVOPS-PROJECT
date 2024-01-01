@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: docker/setup-docker@v2
+      with:
+        dockerfile: Dockerfile
+        context: .
+
+    - name: Build Docker Images
+      run: docker-compose build
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub (replace with your registry if needed)
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Push Docker Images
+      run: docker-compose push
+
+    - name: Deploy to Server
+      run: |
+        # Replace this with your deployment steps
+        docker-compose -f docker-compose.yml up -d
