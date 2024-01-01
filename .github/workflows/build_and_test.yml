@@ -52,8 +52,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          sudo docker-compose build
-          docker-compose push
+         sudo apt docker-compose build
+         sudo apt docker-compose push
 
       - name: Deploy to production
         run: |
