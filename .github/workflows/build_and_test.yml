@@ -21,6 +21,7 @@ jobs:
 
     - name: Build Docker Images
       run: docker-compose build
+      working-directory: ./
 
   deploy:
     runs-on: ubuntu-latest
