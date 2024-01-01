@@ -9,53 +9,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: mydatabase
-          POSTGRES_USER: myuser
-          POSTGRES_PASSWORD: 1234
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
+    - name: Set up Docker
+      uses: docker/setup-docker@v2
 
-      - name: Build and test
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install --upgrade flask-SQLAlchemy
-          apt-get update
-          apt-get install -y postgresql-client
-          python -m pytest
+    - name: Build Docker images
+      run: docker-compose build
 
   deploy:
-    needs: build
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Docker
-        uses: docker/setup-docker@v2
+    - name: Set up Docker
+      uses: docker/setup-docker@v2
 
-      - name: Build and push Docker image
-        run: |
-         sudo apt docker-compose build
-         sudo apt docker-compose push
+    - name: Deploy application
+      run: docker-compose up -d
 
-      - name: Deploy to production
-        run: |
-          docker-compose down
-          docker-compose up -d
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+    - name: Push Docker images to Docker Hub
+      run: |
+        docker-compose push
+        docker push yourdockerhubusername/yourappname:latest
+    env:
+      DOCKER_BUILDKIT: 1
