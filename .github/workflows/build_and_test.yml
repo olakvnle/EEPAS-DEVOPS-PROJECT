@@ -9,39 +9,54 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: mydatabase
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: 1234
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # - name: Set up Docker
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y docker.io
-    #     sudo service docker start
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
 
-    - name: Build Docker Images
-      run: docker-compose build
-      working-directory: ./
+      - name: Build and test
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install --upgrade flask-SQLAlchemy
+          apt-get update
+          apt-get install -y postgresql-client
+          python -m pytest
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
 
-    needs: build
-
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Log in to Docker Hub (replace with your registry if needed)
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up Docker
+        uses: docker/setup-docker@v2
 
-    - name: Push Docker Images
-      run: docker-compose push
+      - name: Build and push Docker image
+        run: |
+          docker-compose build
+          docker-compose push
 
-    - name: Deploy to Server
-      run: |
-        # Replace this with your deployment steps
-        docker-compose -f docker-compose.yml up -d
+      - name: Deploy to production
+        run: |
+          docker-compose down
+          docker-compose up -d
