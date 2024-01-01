@@ -1,46 +1,47 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - samo
+   push:
+     branches: [ "samo" ]
+   pull_request:
+     branches: [ "samo" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-        sudo apt-get update
-        sudo apt-get install -y docker.io
-        sudo service docker start
-
-    - name: Build Docker images
-      run: docker-compose build
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - "5433:5432"
+        env:
+          POSTGRES_DB: mydatabase
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: 1234
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-        sudo apt-get update
-        sudo apt-get install -y docker.io
-        sudo service docker start
-
-    - name: Deploy application
-      run: docker-compose up -d
-
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-    - name: Push Docker images to Docker Hub
+    - name: Build and test
       run: |
-        docker-compose push
-        docker push yourdockerhubusername/yourappname:latest
+        docker-compose up -d --build
+        docker-compose exec app pytest
+      working-directory: ./
+
+    - name: Push to Docker Hub
+      if: success()
+      run: |
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+        # Tag the images with the Docker Hub repository name
+        docker tag starter_code-app:latest $DOCKER_USERNAME/starter_code-app:latest
+        docker tag postgres:latest $DOCKER_USERNAME/postgres:latest
+
+        # Push the tagged images to Docker Hub
+        docker push $DOCKER_USERNAME/starter_code-app:latest
+        docker push $DOCKER_USERNAME/postgres:latest
     env:
-      DOCKER_BUILDKIT: 1
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
