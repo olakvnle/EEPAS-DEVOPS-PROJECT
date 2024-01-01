@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
    push:
-     branches: [ "samo" ]
+     branches: [ "master" ]
    pull_request:
-     branches: [ "samo" ]
+     branches: [ "master" ]
 
 jobs:
   build:
