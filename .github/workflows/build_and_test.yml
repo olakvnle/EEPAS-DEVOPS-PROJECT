@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+   push:
+     branches: [ "samo" ]
+   pull_request:
+     branches: [ "samo" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - "5433:5432"
+        env:
+          POSTGRES_DB: mydatabase
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: 1234
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build and test
+      run: |
+        docker-compose up --build -d
+        # docker-compose exec app pytest
+      working-directory: ./starter_code
+
+    - name: Push to Docker Hub
+      if: success()
+      run: |
+       echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+       # Tag the images with the Docker Hub repository name
+        docker tag image1 $DOCKER_USERNAME/image1:eepas
+        docker tag postgres $DOCKER_USERNAME/postgres:eepas
+        # Push the tagged images to Docker Hub
+        docker push $DOCKER_USERNAME/image1:eepas
+        docker push $DOCKER_USERNAME/postgres:eepas  
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+       
