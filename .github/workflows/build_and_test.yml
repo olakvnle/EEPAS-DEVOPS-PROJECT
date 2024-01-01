@@ -28,7 +28,7 @@ jobs:
       run: |
         docker-compose up -d --build
         docker-compose exec app pytest
-      working-directory: ./
+      working-directory: ./starter_code
 
     - name: Push to Docker Hub
       if: success()
