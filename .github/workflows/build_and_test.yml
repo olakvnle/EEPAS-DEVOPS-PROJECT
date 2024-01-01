@@ -39,7 +39,7 @@ jobs:
         docker tag postgres $DOCKER_USERNAME/eepas
         # Push the tagged images to Docker Hub
         docker push $DOCKER_USERNAME/starter_code-app:eepas
-        docker push $DOCKER_USERNAME/postgres:eepas
+        docker push $DOCKER_USERNAME/postgres:eepas 
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
