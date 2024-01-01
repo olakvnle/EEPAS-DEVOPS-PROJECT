@@ -33,15 +33,8 @@ jobs:
     - name: Push to Docker Hub
       if: success()
       run: |
-        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
-        # Tag the images with the Docker Hub repository name
-        docker tag starter_code-app:latest $DOCKER_USERNAME/starter_code-app:latest
-        docker tag postgres:latest $DOCKER_USERNAME/postgres:latest
-
-        # Push the tagged images to Docker Hub
-        docker push $DOCKER_USERNAME/starter_code-app:latest
-        docker push $DOCKER_USERNAME/postgres:latest
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+       echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+       # Rest of the commands for tagging and pushing images
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
