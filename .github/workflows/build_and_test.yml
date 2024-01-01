@@ -26,7 +26,7 @@ jobs:
 
     - name: Build and test
       run: |
-        docker-compose up --build
+        docker-compose up --build -d
         # docker-compose exec app pytest
       working-directory: ./starter_code
 
