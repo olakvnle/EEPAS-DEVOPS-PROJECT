@@ -35,11 +35,11 @@ jobs:
       run: |
        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
        # Tag the images with the Docker Hub repository name
-        docker tag starter_code_app_1:latest $DOCKER_USERNAME/starter_code_app_1:latest
-        docker tag postgres_1:latest $DOCKER_USERNAME/postgres_1:latest
+        docker tag starter_code-app:eepas $DOCKER_USERNAME/starter_code-app:eepas
+        docker tag postgres:eepas $DOCKER_USERNAME/postgres:eepas
         # Push the tagged images to Docker Hub
-        docker push $DOCKER_USERNAME/starter_code_app_1:latest
-        docker push $DOCKER_USERNAME/postgres_1:latest
+        docker push $DOCKER_USERNAME/starter_code-app:eepas
+        docker push $DOCKER_USERNAME/postgres:eepas
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
