@@ -100,8 +100,8 @@ def venues():
       "num_upcoming_shows": 1,
     }]
   }, {
-    "city": "New York",
-    "state": "NY",
+    "city": "Houston",
+    "state": "Texas",
     "venues": [{
       "id": 2,
       "name": "The Dueling Pianos Bar",
