@@ -1,2 +1,3 @@
 EPPAS WEB APP
 ENSURE TO INSTALL ALL DEPENDENCIES
+For better DevOps practices 
